@@ -1,0 +1,701 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectare SMS.to",
+        "description": "Cheia API din sms.to → Developers → API Keys. E verificată citind soldul; nu se trimite niciun SMS.",
+        "data": {
+          "api_key": "API key",
+          "sender_id": "Sender ID",
+          "default_target": "Număr(e) implicit(e)"
+        },
+        "data_description": {
+          "sender_id": "Maxim 11 litere/cifre, sau un număr de telefon.",
+          "default_target": "Format internațional, separate prin virgulă. Folosite de entitatea notify și când nu dai destinatar."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Actualizează cheia API SMS.to",
+        "data": {
+          "api_key": "API key"
+        }
+      },
+      "reconfigure": {
+        "title": "Schimbă cheia API SMS.to",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Cheia API a fost respinsă de SMS.to.",
+      "cannot_connect": "Nu mă pot conecta la SMS.to.",
+      "invalid_sender_id": "Sender ID trebuie să aibă maxim 11 litere/cifre sau să fie un număr de telefon."
+    },
+    "abort": {
+      "already_configured": "Cheia API e deja configurată.",
+      "reauth_successful": "Cheia API a fost actualizată.",
+      "reconfigure_successful": "Cheia API a fost actualizată."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Setări SMS.to",
+        "description": "URL-ul webhook pentru rapoarte de livrare (îl poți pune și în SMS.to pentru mesajele trimise din afara HA):\n{webhook_url}",
+        "data": {
+          "sender_id": "Sender ID",
+          "default_target": "Număr(e) implicit(e)",
+          "low_balance_threshold": "Prag sold scăzut",
+          "scan_interval": "Interval de actualizare",
+          "timezone": "Fus orar pentru mesaje programate",
+          "delivery_reports": "Primește rapoarte de livrare",
+          "webhook_secret": "Secret semnătură webhook (opțional)"
+        },
+        "data_description": {
+          "delivery_reports": "Adaugă webhook-ul integrării ca callback_url la fiecare mesaj. Necesită un URL extern (sau Nabu Casa).",
+          "webhook_secret": "Dacă l-ai setat în SMS.to, pune-l aici: callback-urile nesemnate vor fi respinse."
+        }
+      }
+    },
+    "error": {
+      "invalid_sender_id": "Sender ID trebuie să aibă maxim 11 litere/cifre sau să fie un număr de telefon."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "balance": {
+        "name": "Sold"
+      },
+      "total_messages": {
+        "name": "SMS-uri trimise"
+      },
+      "last_message_status": {
+        "name": "Status ultimul mesaj"
+      },
+      "last_message_cost": {
+        "name": "Cost ultimul mesaj"
+      },
+      "last_message_time": {
+        "name": "Ultimul mesaj trimis"
+      },
+      "last_campaign_status": {
+        "name": "Status ultima campanie"
+      },
+      "last_campaign_cost": {
+        "name": "Cost ultima campanie"
+      },
+      "last_delivery_status": {
+        "name": "Ultimul raport de livrare"
+      }
+    },
+    "binary_sensor": {
+      "low_balance": {
+        "name": "Sold scăzut"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Actualizează"
+      }
+    },
+    "notify": {
+      "sms": {
+        "name": "SMS"
+      }
+    }
+  },
+  "services": {
+    "send_sms": {
+      "name": "Trimite SMS",
+      "description": "Trimite un SMS (acum sau programat) la unul sau mai multe numere.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "message": {
+          "name": "Mesaj",
+          "description": "Textul mesajului."
+        },
+        "title": {
+          "name": "Titlu",
+          "description": "Opțional, adăugat înaintea mesajului."
+        },
+        "target": {
+          "name": "Destinatari",
+          "description": "Numere în format internațional, separate prin virgulă. Gol = numerele implicite."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        },
+        "scheduled_for": {
+          "name": "Programat pentru",
+          "description": "Trimite mai târziu, format AAAA-LL-ZZ HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Fus orar",
+          "description": "Fusul orar pentru programare (implicit: din opțiuni)."
+        },
+        "bypass_optout": {
+          "name": "Ignoră dezabonarea",
+          "description": "Trimite și la numerele dezabonate."
+        },
+        "callback_url": {
+          "name": "URL callback",
+          "description": "Unde trimite SMS.to raportul de livrare (implicit: webhook-ul integrării, dacă e activat)."
+        }
+      }
+    },
+    "send_flash_sms": {
+      "name": "Trimite flash SMS",
+      "description": "SMS afișat direct pe ecran, nesalvat în inbox.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "message": {
+          "name": "Mesaj",
+          "description": "Textul mesajului."
+        },
+        "title": {
+          "name": "Titlu",
+          "description": "Opțional, adăugat înaintea mesajului."
+        },
+        "target": {
+          "name": "Destinatari",
+          "description": "Numere în format internațional, separate prin virgulă. Gol = numerele implicite."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        },
+        "scheduled_for": {
+          "name": "Programat pentru",
+          "description": "Trimite mai târziu, format AAAA-LL-ZZ HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Fus orar",
+          "description": "Fusul orar pentru programare (implicit: din opțiuni)."
+        },
+        "bypass_optout": {
+          "name": "Ignoră dezabonarea",
+          "description": "Trimite și la numerele dezabonate."
+        },
+        "callback_url": {
+          "name": "URL callback",
+          "description": "Unde trimite SMS.to raportul de livrare (implicit: webhook-ul integrării, dacă e activat)."
+        }
+      }
+    },
+    "send_viber": {
+      "name": "Trimite mesaj Viber",
+      "description": "Trimite un mesaj Viber (cu fallback pe SMS, dacă e configurat în SMS.to).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "message": {
+          "name": "Mesaj",
+          "description": "Textul mesajului."
+        },
+        "title": {
+          "name": "Titlu",
+          "description": "Opțional, adăugat înaintea mesajului."
+        },
+        "target": {
+          "name": "Destinatari",
+          "description": "Numere în format internațional, separate prin virgulă. Gol = numerele implicite."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        },
+        "scheduled_for": {
+          "name": "Programat pentru",
+          "description": "Trimite mai târziu, format AAAA-LL-ZZ HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Fus orar",
+          "description": "Fusul orar pentru programare (implicit: din opțiuni)."
+        },
+        "bypass_optout": {
+          "name": "Ignoră dezabonarea",
+          "description": "Trimite și la numerele dezabonate."
+        },
+        "callback_url": {
+          "name": "URL callback",
+          "description": "Unde trimite SMS.to raportul de livrare (implicit: webhook-ul integrării, dacă e activat)."
+        },
+        "viber_image_url": {
+          "name": "URL imagine",
+          "description": "Imaginea afișată în mesajul Viber."
+        },
+        "viber_target_url": {
+          "name": "URL buton",
+          "description": "Link-ul deschis de butonul Viber."
+        },
+        "viber_caption": {
+          "name": "Text buton",
+          "description": "Textul de pe butonul Viber."
+        }
+      }
+    },
+    "send_to_list": {
+      "name": "Trimite la o listă",
+      "description": "Trimite o campanie către o listă de contacte SMS.to.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "list_id": {
+          "name": "ID listă",
+          "description": "ID-ul listei de contacte SMS.to."
+        },
+        "message": {
+          "name": "Mesaj",
+          "description": "Textul mesajului."
+        },
+        "channel": {
+          "name": "Canal",
+          "description": "sms, flash sau viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        },
+        "scheduled_for": {
+          "name": "Programat pentru",
+          "description": "Trimite mai târziu, format AAAA-LL-ZZ HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Fus orar",
+          "description": "Fusul orar pentru programare (implicit: din opțiuni)."
+        },
+        "bypass_optout": {
+          "name": "Ignoră dezabonarea",
+          "description": "Trimite și la numerele dezabonate."
+        },
+        "callback_url": {
+          "name": "URL callback",
+          "description": "Unde trimite SMS.to raportul de livrare (implicit: webhook-ul integrării, dacă e activat)."
+        },
+        "estimate_only": {
+          "name": "Doar estimare",
+          "description": "Doar returnează costul, nu trimite / verifică."
+        }
+      }
+    },
+    "send_personalized": {
+      "name": "Trimite SMS personalizate",
+      "description": "Text diferit pentru fiecare destinatar, într-o singură campanie.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "messages": {
+          "name": "Mesaje",
+          "description": "Listă de perechi {to, message}."
+        },
+        "channel": {
+          "name": "Canal",
+          "description": "sms, flash sau viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        },
+        "scheduled_for": {
+          "name": "Programat pentru",
+          "description": "Trimite mai târziu, format AAAA-LL-ZZ HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Fus orar",
+          "description": "Fusul orar pentru programare (implicit: din opțiuni)."
+        },
+        "bypass_optout": {
+          "name": "Ignoră dezabonarea",
+          "description": "Trimite și la numerele dezabonate."
+        },
+        "callback_url": {
+          "name": "URL callback",
+          "description": "Unde trimite SMS.to raportul de livrare (implicit: webhook-ul integrării, dacă e activat)."
+        },
+        "estimate_only": {
+          "name": "Doar estimare",
+          "description": "Doar returnează costul, nu trimite / verifică."
+        }
+      }
+    },
+    "estimate_cost": {
+      "name": "Estimează costul",
+      "description": "Cât ar costa un mesaj, fără să-l trimită.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "message": {
+          "name": "Mesaj",
+          "description": "Textul mesajului."
+        },
+        "title": {
+          "name": "Titlu",
+          "description": "Opțional, adăugat înaintea mesajului."
+        },
+        "target": {
+          "name": "Destinatari",
+          "description": "Numere în format internațional, separate prin virgulă. Gol = numerele implicite."
+        },
+        "list_id": {
+          "name": "ID listă",
+          "description": "ID-ul listei de contacte SMS.to."
+        },
+        "channel": {
+          "name": "Canal",
+          "description": "sms, flash sau viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Alt expeditor doar pentru acest mesaj."
+        }
+      }
+    },
+    "get_message": {
+      "name": "Detalii mesaj",
+      "description": "Detaliile și statusul unui mesaj trimis.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identificatorul returnat de SMS.to."
+        }
+      }
+    },
+    "list_messages": {
+      "name": "Listează mesajele",
+      "description": "Istoricul mesajelor trimise (se acceptă și alte filtre SMS.to).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "limit": {
+          "name": "Limită",
+          "description": "Rezultate pe pagină."
+        },
+        "page": {
+          "name": "Pagină",
+          "description": "Numărul paginii."
+        }
+      }
+    },
+    "get_campaign": {
+      "name": "Detalii campanie",
+      "description": "Detaliile unei campanii.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identificatorul returnat de SMS.to."
+        }
+      }
+    },
+    "list_campaigns": {
+      "name": "Listează campaniile",
+      "description": "Istoricul campaniilor.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "limit": {
+          "name": "Limită",
+          "description": "Rezultate pe pagină."
+        },
+        "page": {
+          "name": "Pagină",
+          "description": "Numărul paginii."
+        }
+      }
+    },
+    "check_opt_out": {
+      "name": "Verifică dezabonarea",
+      "description": "Dacă un număr s-a dezabonat.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "default_prefix": {
+          "name": "Prefix implicit",
+          "description": "Prefixul de țară pentru numerele fără prefix (ex. 40)."
+        }
+      }
+    },
+    "lookup_number": {
+      "name": "Verificare număr",
+      "description": "Verifică dacă un număr e valid/accesibil și rețeaua lui (HLR, cu plată).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "estimate_only": {
+          "name": "Doar estimare",
+          "description": "Doar returnează costul, nu trimite / verifică."
+        }
+      }
+    },
+    "list_lists": {
+      "name": "Listează listele",
+      "description": "Listele tale de contacte SMS.to.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "name": {
+          "name": "Nume",
+          "description": "Nume."
+        },
+        "page": {
+          "name": "Pagină",
+          "description": "Numărul paginii."
+        }
+      }
+    },
+    "create_list": {
+      "name": "Creează listă",
+      "description": "Creează listă",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "name": {
+          "name": "Nume",
+          "description": "Nume."
+        },
+        "description": {
+          "name": "Descriere",
+          "description": "Descriere opțională."
+        },
+        "share_with_team": {
+          "name": "Partajează cu echipa",
+          "description": "Lista e vizibilă echipei tale."
+        }
+      }
+    },
+    "delete_list": {
+      "name": "Șterge listă",
+      "description": "Șterge listă",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identificatorul returnat de SMS.to."
+        }
+      }
+    },
+    "list_contacts": {
+      "name": "Listează contactele",
+      "description": "Contactele din una sau mai multe liste.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "list_ids": {
+          "name": "ID-uri liste",
+          "description": "Unul sau mai multe ID-uri de listă, separate prin virgulă."
+        },
+        "limit": {
+          "name": "Limită",
+          "description": "Rezultate pe pagină."
+        },
+        "page": {
+          "name": "Pagină",
+          "description": "Numărul paginii."
+        }
+      }
+    },
+    "create_contact": {
+      "name": "Creează contact",
+      "description": "Creează contact",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "list_ids": {
+          "name": "ID-uri liste",
+          "description": "Unul sau mai multe ID-uri de listă, separate prin virgulă."
+        },
+        "firstname": {
+          "name": "Prenume",
+          "description": "Prenume"
+        },
+        "lastname": {
+          "name": "Nume de familie",
+          "description": "Nume de familie"
+        },
+        "email": {
+          "name": "Email",
+          "description": "Email"
+        }
+      }
+    },
+    "delete_contact": {
+      "name": "Șterge contact",
+      "description": "Elimină un număr (din listele date sau din toate).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "list_ids": {
+          "name": "ID-uri liste",
+          "description": "Unul sau mai multe ID-uri de listă, separate prin virgulă."
+        }
+      }
+    },
+    "opt_in": {
+      "name": "Reabonează",
+      "description": "Reabonează un număr.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "list_ids": {
+          "name": "ID-uri liste",
+          "description": "Unul sau mai multe ID-uri de listă, separate prin virgulă."
+        }
+      }
+    },
+    "opt_out": {
+      "name": "Dezabonează",
+      "description": "Dezabonează un număr.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "phone": {
+          "name": "Telefon",
+          "description": "Număr de telefon în format internațional."
+        },
+        "list_ids": {
+          "name": "ID-uri liste",
+          "description": "Unul sau mai multe ID-uri de listă, separate prin virgulă."
+        }
+      }
+    },
+    "recent_optouts": {
+      "name": "Dezabonări recente",
+      "description": "Numerele dezabonate recent.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        }
+      }
+    },
+    "create_shortlink": {
+      "name": "Creează link scurt",
+      "description": "Link scurt cu statistici, pentru SMS-uri.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "name": {
+          "name": "Nume",
+          "description": "Nume."
+        },
+        "url": {
+          "name": "URL",
+          "description": "Link-ul lung de scurtat."
+        }
+      }
+    },
+    "list_shortlinks": {
+      "name": "Listează link-urile scurte",
+      "description": "Listează link-urile scurte",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "limit": {
+          "name": "Limită",
+          "description": "Rezultate pe pagină."
+        },
+        "page": {
+          "name": "Pagină",
+          "description": "Numărul paginii."
+        }
+      }
+    },
+    "delete_shortlink": {
+      "name": "Șterge link scurt",
+      "description": "Șterge link scurt",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identificatorul returnat de SMS.to."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Actualizează",
+      "description": "Actualizează acum soldul și senzorii.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Cont",
+          "description": "Ce cont SMS.to folosești (doar dacă ai mai multe)."
+        }
+      }
+    }
+  },
+  "selector": {}
+}

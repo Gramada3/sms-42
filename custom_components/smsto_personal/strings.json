@@ -1,0 +1,701 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect SMS.to",
+        "description": "API key from sms.to → Developers → API Keys. It's checked by reading your balance; no SMS is sent.",
+        "data": {
+          "api_key": "API key",
+          "sender_id": "Sender ID",
+          "default_target": "Default number(s)"
+        },
+        "data_description": {
+          "sender_id": "Up to 11 letters/digits, or a phone number.",
+          "default_target": "International format, comma-separated. Used by the notify entity and when no recipient is given."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Update the SMS.to API key",
+        "data": {
+          "api_key": "API key"
+        }
+      },
+      "reconfigure": {
+        "title": "Change the SMS.to API key",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "API key rejected by SMS.to.",
+      "cannot_connect": "Could not reach SMS.to.",
+      "invalid_sender_id": "Sender ID must be at most 11 letters/digits, or a phone number."
+    },
+    "abort": {
+      "already_configured": "This API key is already configured.",
+      "reauth_successful": "API key updated.",
+      "reconfigure_successful": "API key updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "SMS.to settings",
+        "description": "Delivery-report webhook URL (paste it in SMS.to if you want reports for messages sent outside HA too):\n{webhook_url}",
+        "data": {
+          "sender_id": "Sender ID",
+          "default_target": "Default number(s)",
+          "low_balance_threshold": "Low balance threshold",
+          "scan_interval": "Update interval",
+          "timezone": "Time zone for scheduled messages",
+          "delivery_reports": "Receive delivery reports",
+          "webhook_secret": "Webhook signing secret (optional)"
+        },
+        "data_description": {
+          "delivery_reports": "Adds this integration's webhook as callback_url on every message. Needs an external URL (or Nabu Casa).",
+          "webhook_secret": "If set in SMS.to, paste it here: unsigned callbacks will be rejected."
+        }
+      }
+    },
+    "error": {
+      "invalid_sender_id": "Sender ID must be at most 11 letters/digits, or a phone number."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "balance": {
+        "name": "Balance"
+      },
+      "total_messages": {
+        "name": "SMS sent"
+      },
+      "last_message_status": {
+        "name": "Last message status"
+      },
+      "last_message_cost": {
+        "name": "Last message cost"
+      },
+      "last_message_time": {
+        "name": "Last message sent"
+      },
+      "last_campaign_status": {
+        "name": "Last campaign status"
+      },
+      "last_campaign_cost": {
+        "name": "Last campaign cost"
+      },
+      "last_delivery_status": {
+        "name": "Last delivery report"
+      }
+    },
+    "binary_sensor": {
+      "low_balance": {
+        "name": "Low balance"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      }
+    },
+    "notify": {
+      "sms": {
+        "name": "SMS"
+      }
+    }
+  },
+  "services": {
+    "send_sms": {
+      "name": "Send SMS",
+      "description": "Send an SMS (now or scheduled) to one or more numbers.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Message text."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Optional, prepended to the message."
+        },
+        "target": {
+          "name": "Recipients",
+          "description": "Numbers in international format, comma-separated. Empty = default number(s)."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        },
+        "scheduled_for": {
+          "name": "Scheduled for",
+          "description": "Send later, format YYYY-MM-DD HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Time zone",
+          "description": "Time zone for the schedule (default: from options)."
+        },
+        "bypass_optout": {
+          "name": "Bypass opt-out",
+          "description": "Send even to numbers that unsubscribed."
+        },
+        "callback_url": {
+          "name": "Callback URL",
+          "description": "Where SMS.to posts the delivery report (default: this integration's webhook, if enabled)."
+        }
+      }
+    },
+    "send_flash_sms": {
+      "name": "Send flash SMS",
+      "description": "SMS shown directly on screen, not saved in the inbox.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Message text."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Optional, prepended to the message."
+        },
+        "target": {
+          "name": "Recipients",
+          "description": "Numbers in international format, comma-separated. Empty = default number(s)."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        },
+        "scheduled_for": {
+          "name": "Scheduled for",
+          "description": "Send later, format YYYY-MM-DD HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Time zone",
+          "description": "Time zone for the schedule (default: from options)."
+        },
+        "bypass_optout": {
+          "name": "Bypass opt-out",
+          "description": "Send even to numbers that unsubscribed."
+        },
+        "callback_url": {
+          "name": "Callback URL",
+          "description": "Where SMS.to posts the delivery report (default: this integration's webhook, if enabled)."
+        }
+      }
+    },
+    "send_viber": {
+      "name": "Send Viber message",
+      "description": "Send a Viber message (with SMS fallback, if set up in SMS.to).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Message text."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Optional, prepended to the message."
+        },
+        "target": {
+          "name": "Recipients",
+          "description": "Numbers in international format, comma-separated. Empty = default number(s)."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        },
+        "scheduled_for": {
+          "name": "Scheduled for",
+          "description": "Send later, format YYYY-MM-DD HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Time zone",
+          "description": "Time zone for the schedule (default: from options)."
+        },
+        "bypass_optout": {
+          "name": "Bypass opt-out",
+          "description": "Send even to numbers that unsubscribed."
+        },
+        "callback_url": {
+          "name": "Callback URL",
+          "description": "Where SMS.to posts the delivery report (default: this integration's webhook, if enabled)."
+        },
+        "viber_image_url": {
+          "name": "Image URL",
+          "description": "Image shown in the Viber message."
+        },
+        "viber_target_url": {
+          "name": "Button URL",
+          "description": "Link opened by the Viber button."
+        },
+        "viber_caption": {
+          "name": "Button caption",
+          "description": "Text on the Viber button."
+        }
+      }
+    },
+    "send_to_list": {
+      "name": "Send to contact list",
+      "description": "Send a campaign to an SMS.to contact list.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "list_id": {
+          "name": "List ID",
+          "description": "SMS.to contact list ID."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Message text."
+        },
+        "channel": {
+          "name": "Channel",
+          "description": "sms, flash or viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        },
+        "scheduled_for": {
+          "name": "Scheduled for",
+          "description": "Send later, format YYYY-MM-DD HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Time zone",
+          "description": "Time zone for the schedule (default: from options)."
+        },
+        "bypass_optout": {
+          "name": "Bypass opt-out",
+          "description": "Send even to numbers that unsubscribed."
+        },
+        "callback_url": {
+          "name": "Callback URL",
+          "description": "Where SMS.to posts the delivery report (default: this integration's webhook, if enabled)."
+        },
+        "estimate_only": {
+          "name": "Estimate only",
+          "description": "Only return the cost, don't send / look up."
+        }
+      }
+    },
+    "send_personalized": {
+      "name": "Send personalized SMS",
+      "description": "Different text per recipient, in one campaign.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "messages": {
+          "name": "Messages",
+          "description": "List of {to, message} pairs."
+        },
+        "channel": {
+          "name": "Channel",
+          "description": "sms, flash or viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        },
+        "scheduled_for": {
+          "name": "Scheduled for",
+          "description": "Send later, format YYYY-MM-DD HH:MM:SS."
+        },
+        "timezone": {
+          "name": "Time zone",
+          "description": "Time zone for the schedule (default: from options)."
+        },
+        "bypass_optout": {
+          "name": "Bypass opt-out",
+          "description": "Send even to numbers that unsubscribed."
+        },
+        "callback_url": {
+          "name": "Callback URL",
+          "description": "Where SMS.to posts the delivery report (default: this integration's webhook, if enabled)."
+        },
+        "estimate_only": {
+          "name": "Estimate only",
+          "description": "Only return the cost, don't send / look up."
+        }
+      }
+    },
+    "estimate_cost": {
+      "name": "Estimate cost",
+      "description": "How much a message would cost, without sending it.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Message text."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Optional, prepended to the message."
+        },
+        "target": {
+          "name": "Recipients",
+          "description": "Numbers in international format, comma-separated. Empty = default number(s)."
+        },
+        "list_id": {
+          "name": "List ID",
+          "description": "SMS.to contact list ID."
+        },
+        "channel": {
+          "name": "Channel",
+          "description": "sms, flash or viber."
+        },
+        "sender_id": {
+          "name": "Sender ID",
+          "description": "Override the configured sender for this message."
+        }
+      }
+    },
+    "get_message": {
+      "name": "Get message",
+      "description": "Details and status of a sent message.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identifier returned by SMS.to."
+        }
+      }
+    },
+    "list_messages": {
+      "name": "List messages",
+      "description": "Sent message history (extra SMS.to filters allowed).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "limit": {
+          "name": "Limit",
+          "description": "Results per page."
+        },
+        "page": {
+          "name": "Page",
+          "description": "Page number."
+        }
+      }
+    },
+    "get_campaign": {
+      "name": "Get campaign",
+      "description": "Details of a campaign.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identifier returned by SMS.to."
+        }
+      }
+    },
+    "list_campaigns": {
+      "name": "List campaigns",
+      "description": "Campaign history.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "limit": {
+          "name": "Limit",
+          "description": "Results per page."
+        },
+        "page": {
+          "name": "Page",
+          "description": "Page number."
+        }
+      }
+    },
+    "check_opt_out": {
+      "name": "Check opt-out",
+      "description": "Whether a number has unsubscribed.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "default_prefix": {
+          "name": "Default prefix",
+          "description": "Country prefix for numbers without one (e.g. 40)."
+        }
+      }
+    },
+    "lookup_number": {
+      "name": "Number lookup",
+      "description": "Check if a number is valid/reachable and its network (HLR, paid).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "estimate_only": {
+          "name": "Estimate only",
+          "description": "Only return the cost, don't send / look up."
+        }
+      }
+    },
+    "list_lists": {
+      "name": "List contact lists",
+      "description": "Your SMS.to contact lists.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name."
+        },
+        "page": {
+          "name": "Page",
+          "description": "Page number."
+        }
+      }
+    },
+    "create_list": {
+      "name": "Create contact list",
+      "description": "Create contact list",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name."
+        },
+        "description": {
+          "name": "Description",
+          "description": "Optional description."
+        },
+        "share_with_team": {
+          "name": "Share with team",
+          "description": "Make the list visible to your team."
+        }
+      }
+    },
+    "delete_list": {
+      "name": "Delete contact list",
+      "description": "Delete contact list",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identifier returned by SMS.to."
+        }
+      }
+    },
+    "list_contacts": {
+      "name": "List contacts",
+      "description": "Contacts in one or more lists.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "list_ids": {
+          "name": "List IDs",
+          "description": "One or more list IDs, comma-separated."
+        },
+        "limit": {
+          "name": "Limit",
+          "description": "Results per page."
+        },
+        "page": {
+          "name": "Page",
+          "description": "Page number."
+        }
+      }
+    },
+    "create_contact": {
+      "name": "Create contact",
+      "description": "Create contact",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "list_ids": {
+          "name": "List IDs",
+          "description": "One or more list IDs, comma-separated."
+        },
+        "firstname": {
+          "name": "First name",
+          "description": "First name"
+        },
+        "lastname": {
+          "name": "Last name",
+          "description": "Last name"
+        },
+        "email": {
+          "name": "Email",
+          "description": "Email"
+        }
+      }
+    },
+    "delete_contact": {
+      "name": "Delete contact",
+      "description": "Remove a number (from given lists, or all).",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "list_ids": {
+          "name": "List IDs",
+          "description": "One or more list IDs, comma-separated."
+        }
+      }
+    },
+    "opt_in": {
+      "name": "Opt in",
+      "description": "Re-subscribe a number.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "list_ids": {
+          "name": "List IDs",
+          "description": "One or more list IDs, comma-separated."
+        }
+      }
+    },
+    "opt_out": {
+      "name": "Opt out",
+      "description": "Unsubscribe a number.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "phone": {
+          "name": "Phone",
+          "description": "Phone number in international format."
+        },
+        "list_ids": {
+          "name": "List IDs",
+          "description": "One or more list IDs, comma-separated."
+        }
+      }
+    },
+    "recent_optouts": {
+      "name": "Recent opt-outs",
+      "description": "Numbers that unsubscribed recently.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        }
+      }
+    },
+    "create_shortlink": {
+      "name": "Create short link",
+      "description": "Trackable short link for SMS texts.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name."
+        },
+        "url": {
+          "name": "URL",
+          "description": "Long URL to shorten."
+        }
+      }
+    },
+    "list_shortlinks": {
+      "name": "List short links",
+      "description": "List short links",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "limit": {
+          "name": "Limit",
+          "description": "Results per page."
+        },
+        "page": {
+          "name": "Page",
+          "description": "Page number."
+        }
+      }
+    },
+    "delete_shortlink": {
+      "name": "Delete short link",
+      "description": "Delete short link",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        },
+        "id": {
+          "name": "ID",
+          "description": "Identifier returned by SMS.to."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Refresh",
+      "description": "Update balance and status sensors now.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Account",
+          "description": "Which SMS.to account to use (only if you have several)."
+        }
+      }
+    }
+  },
+  "selector": {}
+}

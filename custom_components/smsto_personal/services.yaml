@@ -1,0 +1,568 @@
+send_sms:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    title:
+      required: false
+      selector:
+        text: {}
+    target:
+      required: false
+      selector:
+        text: {}
+    sender_id:
+      required: false
+      selector:
+        text: {}
+    scheduled_for:
+      required: false
+      selector:
+        text: {}
+    timezone:
+      required: false
+      selector:
+        text: {}
+    bypass_optout:
+      required: false
+      selector:
+        boolean: {}
+    callback_url:
+      required: false
+      selector:
+        text:
+          type: url
+send_flash_sms:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    title:
+      required: false
+      selector:
+        text: {}
+    target:
+      required: false
+      selector:
+        text: {}
+    sender_id:
+      required: false
+      selector:
+        text: {}
+    scheduled_for:
+      required: false
+      selector:
+        text: {}
+    timezone:
+      required: false
+      selector:
+        text: {}
+    bypass_optout:
+      required: false
+      selector:
+        boolean: {}
+    callback_url:
+      required: false
+      selector:
+        text:
+          type: url
+send_viber:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    title:
+      required: false
+      selector:
+        text: {}
+    target:
+      required: false
+      selector:
+        text: {}
+    sender_id:
+      required: false
+      selector:
+        text: {}
+    scheduled_for:
+      required: false
+      selector:
+        text: {}
+    timezone:
+      required: false
+      selector:
+        text: {}
+    bypass_optout:
+      required: false
+      selector:
+        boolean: {}
+    callback_url:
+      required: false
+      selector:
+        text:
+          type: url
+    viber_image_url:
+      required: false
+      selector:
+        text:
+          type: url
+    viber_target_url:
+      required: false
+      selector:
+        text:
+          type: url
+    viber_caption:
+      required: false
+      selector:
+        text: {}
+send_to_list:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    list_id:
+      required: true
+      selector:
+        text: {}
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    channel:
+      required: false
+      selector:
+        select:
+          options:
+          - sms
+          - flash
+          - viber
+    sender_id:
+      required: false
+      selector:
+        text: {}
+    scheduled_for:
+      required: false
+      selector:
+        text: {}
+    timezone:
+      required: false
+      selector:
+        text: {}
+    bypass_optout:
+      required: false
+      selector:
+        boolean: {}
+    callback_url:
+      required: false
+      selector:
+        text:
+          type: url
+    estimate_only:
+      required: false
+      selector:
+        boolean: {}
+send_personalized:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    messages:
+      required: true
+      selector:
+        object: {}
+    channel:
+      required: false
+      selector:
+        select:
+          options:
+          - sms
+          - flash
+          - viber
+    sender_id:
+      required: false
+      selector:
+        text: {}
+    scheduled_for:
+      required: false
+      selector:
+        text: {}
+    timezone:
+      required: false
+      selector:
+        text: {}
+    bypass_optout:
+      required: false
+      selector:
+        boolean: {}
+    callback_url:
+      required: false
+      selector:
+        text:
+          type: url
+    estimate_only:
+      required: false
+      selector:
+        boolean: {}
+estimate_cost:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    title:
+      required: false
+      selector:
+        text: {}
+    target:
+      required: false
+      selector:
+        text: {}
+    list_id:
+      required: false
+      selector:
+        text: {}
+    channel:
+      required: false
+      selector:
+        select:
+          options:
+          - sms
+          - flash
+          - viber
+    sender_id:
+      required: false
+      selector:
+        text: {}
+get_message:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    id:
+      required: true
+      selector:
+        text: {}
+list_messages:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    limit:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+    page:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+get_campaign:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    id:
+      required: true
+      selector:
+        text: {}
+list_campaigns:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    limit:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+    page:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+check_opt_out:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    default_prefix:
+      required: false
+      selector:
+        text: {}
+lookup_number:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    estimate_only:
+      required: false
+      selector:
+        boolean: {}
+list_lists:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    name:
+      required: false
+      selector:
+        text: {}
+    page:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+create_list:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    name:
+      required: true
+      selector:
+        text: {}
+    description:
+      required: false
+      selector:
+        text: {}
+    share_with_team:
+      required: false
+      selector:
+        boolean: {}
+delete_list:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    id:
+      required: true
+      selector:
+        text: {}
+list_contacts:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    list_ids:
+      required: true
+      selector:
+        text: {}
+    limit:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+    page:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+create_contact:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    list_ids:
+      required: true
+      selector:
+        text: {}
+    firstname:
+      required: false
+      selector:
+        text: {}
+    lastname:
+      required: false
+      selector:
+        text: {}
+    email:
+      required: false
+      selector:
+        text:
+          type: email
+delete_contact:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    list_ids:
+      required: false
+      selector:
+        text: {}
+opt_in:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    list_ids:
+      required: false
+      selector:
+        text: {}
+opt_out:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    phone:
+      required: true
+      selector:
+        text: {}
+    list_ids:
+      required: false
+      selector:
+        text: {}
+recent_optouts:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+create_shortlink:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    name:
+      required: true
+      selector:
+        text: {}
+    url:
+      required: true
+      selector:
+        text:
+          type: url
+list_shortlinks:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    limit:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+    page:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+delete_shortlink:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
+    id:
+      required: true
+      selector:
+        text: {}
+refresh:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: smsto_personal
